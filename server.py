@@ -3,6 +3,14 @@ from flask import request, jsonify
 import oracledb
 
 app = Flask(__name__)
+cs = "(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=oracle.cise.ufl.edu)(PORT=1521))(CONNECT_DATA=(SERVER=DEDICATED)(SID=orcl)))"
+connection = oracledb.connect(
+user='golamari.h',
+password='rWd2BmKUUyF67AJDP7cZ0ecY',
+dsn=cs)
+
+cursor = connection.cursor()
+print("Successfully connected to Oracle Database")
 
 @app.route("/")
 def hello_world():
@@ -15,14 +23,6 @@ def get_data():
     ##Send SQL query - TODO
 
     ##Connection to db
-    cs = "(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=oracle.cise.ufl.edu)(PORT=1521))(CONNECT_DATA=(SERVER=DEDICATED)(SID=orcl)))"
-    connection = oracledb.connect(
-    user='golamari.h',
-    password='rWd2BmKUUyF67AJDP7cZ0ecY',
-    dsn=cs)
-
-    cursor = connection.cursor()
-    print("Successfully connected to Oracle Database")
 
     # ##Query
     res = cursor.execute("""
