@@ -384,6 +384,18 @@ SELECT year, country, iup,
 # country and years
 #temp = mockup_5.format('India', 1990, 2022)
 
+records_count = """
+SELECT  (SELECT COUNT(*) FROM country_prime) + 
+        (SELECT COUNT(*) FROM Global_Surface_Temperature) +
+        (SELECT COUNT(*) FROM Electricity) +
+        (SELECT COUNT(*) FROM GDP) +
+        (SELECT COUNT(*) FROM Global_Atmosphere_Temperature) +
+        (SELECT COUNT(*) FROM CO2_Emission) +
+        (SELECT COUNT(*) FROM Internet) as num_records
+FROM Dual"""
+
+
+
 
 
 
