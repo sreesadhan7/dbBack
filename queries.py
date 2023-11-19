@@ -104,9 +104,10 @@ Order BY Year"""
 
 #-------------------------------------------------------------------------------------------------------------
 mockup_1_3  = """WITH temperature_year_extraction AS
-(SELECT EXTRACT(YEAR FROM time_stamp) year ,Global_Atmosphere_Temperature.*   FROM Global_Atmosphere_Temperature)
+(SELECT EXTRACT(YEAR FROM time_stamp) year ,
+    Global_Atmosphere_Temperature.*   FROM Global_Atmosphere_Temperature)
 
-SELECT distinct country,year,
+SELECT distinct year,
 Round(AVG(temperature_monthly_mean) OVER ( PARTITION BY country,year  Order By year, 2)) yearly_temp_mean,
 Round(STDDEV(temperature_monthly_mean) OVER ( PARTITION BY country, year Order By year, 2)) yearly_temp_std,
 Round(Min(temperature_monthly_mean) OVER ( PARTITION BY country, year Order By year, 2)) yearly_temp_min,
@@ -134,10 +135,11 @@ ORDER By total_emissions desc
 FETCH NEXT {0} ROWs ONLY)
 
 SELECT  
-    country, time_stamp, total co2_emission_million_metric_tons   
+    Extract(Year FROM time_stamp) as year,country,  total co2_emission_million_metric_tons   
 FROM CO2_Emission
 WHERE country IN ( SELECT country FROM  top_n_polluters)
     AND (EXTRACT ( Year FROM time_stamp) > {1} AND EXTRACT ( Year FROM time_stamp) < {2})
+    Order By country, year
 """
 # top_n_countries, year range
 temp = mockup_2_1.format(10,  1960, 2022)
@@ -149,12 +151,18 @@ temp = mockup_2_1.format(10,  1960, 2022)
 # -- country, year range
 # -- Needs dual axis charts
 mockup_2_2 = """SELECT 
-c.time_stamp, c.country, c.total co2_emissions, g.gdp/1000000000 gdp_in_billions, gst.temperature surface_temperature
+    Extract(Year From c.time_stamp) as year, 
+    c.total co2_emissions, 
+    g.gdp/1000000000 gdp_in_billions, 
+    gst.temperature surface_temperature
 FROM CO2_Emission c
-INNER JOIN GDP g ON c.country = g.country AND g.time_stamp = c.time_stamp
-INNER JOIN Global_Surface_Temperature gst ON c.country = gst.country AND c.time_stamp = gst.time_stamp
+    INNER JOIN GDP g ON c.country = g.country AND g.time_stamp = c.time_stamp
+    INNER JOIN Global_Surface_Temperature gst ON c.country = gst.country 
+    AND c.time_stamp = gst.time_stamp
 WHERE c.country = '{0}'
-     AND (EXTRACT ( Year FROM c.time_stamp) > {1} AND EXTRACT ( Year FROM c.time_stamp) < {2})
+     AND (EXTRACT ( Year FROM c.time_stamp) > {1} 
+     AND EXTRACT ( Year FROM c.time_stamp) < {2})
+ORDER BY c.country, year
 """
 # country and year filters
 temp = mockup_2_2.format('United States', 1960, 2022)
@@ -164,14 +172,18 @@ temp = mockup_2_2.format('United States', 1960, 2022)
 # -- carbon intensity vs GDP
 # -- dual axis charts
 # -- country and year filters
-mockup_2_3 = """
-SELECT 
-c.time_stamp, c.country, round(c.total/g.population*1e6, 2) carbon_intensity, g.gdp/1000000000 gdp_in_billions
+mockup_2_3 = """SELECT 
+    EXTRACT(Year FROM c.time_stamp) as year, 
+    round(c.total/g.population*1e6, 2) carbon_intensity, 
+    g.gdp/1000000000 gdp_in_billions
 FROM CO2_Emission c
-INNER JOIN GDP g ON c.country = g.country AND g.time_stamp = c.time_stamp
-INNER JOIN Global_Surface_Temperature gst ON c.country = gst.country AND c.time_stamp = gst.time_stamp
+    INNER JOIN GDP g ON c.country = g.country AND g.time_stamp = c.time_stamp
+    INNER JOIN Global_Surface_Temperature gst ON c.country = gst.country 
+    AND c.time_stamp = gst.time_stamp
 WHERE c.country = '{0}'
-     AND (EXTRACT ( Year FROM c.time_stamp) > {1} AND EXTRACT ( Year FROM c.time_stamp) < {2});
+     AND (EXTRACT ( Year FROM c.time_stamp) > {1} 
+     AND EXTRACT ( Year FROM c.time_stamp) < {2})
+ORDER BY Year
 """
 # country and year filters
 temp = mockup_2_3.format('United States', 1960, 2022)
@@ -188,14 +200,17 @@ WITH co2_emission_year AS (
     SELECT country, Extract(YEAR FROM time_stamp) year, total emissions FROM co2_emission
     WHERE Extract(YEAR FROM time_stamp) > 1990),
 
-Yearly_pollutions as (SELECT distinct year, round(AVG(emissions) OVER (PARTITION BY year), 2)*2 average_year_emissions 
+Yearly_pollutions as (SELECT distinct year, round(AVG(emissions) 
+                        OVER (PARTITION BY year), 2)*2 average_year_emissions 
 FROM co2_emission_year),
 
 countries_classification AS (SELECT 
     country, year,
         CASE 
-     WHEN emissions > (SELECT AVG(average_year_emissions) FROM Yearly_pollutions WHERE Yearly_pollutions.year = year) THEN 'NF'
-     WHEN emissions < (SELECT AVG(average_year_emissions) FROM Yearly_pollutions WHERE Yearly_pollutions.year = year) THEN 'F'
+     WHEN emissions > (SELECT AVG(average_year_emissions) FROM Yearly_pollutions 
+                        WHERE Yearly_pollutions.year = year) THEN 'NF'
+     WHEN emissions < (SELECT AVG(average_year_emissions) FROM Yearly_pollutions 
+                        WHERE Yearly_pollutions.year = year) THEN 'F'
      ELSE 'N'
      END As Status
      FROM co2_emission_year)
@@ -204,6 +219,7 @@ SELECT year, count(*) non_eco_friendly_countries
 FROM countries_classification 
 WHERE Status = 'NF' 
 GROUP BY Year
+ORDER BY year
 """
 
 #-------------------------------------------------------------------------------------------------------------
@@ -260,7 +276,7 @@ SELECT
 FROM Groupingyears
 WHERE year > {2} and year <= {3}
 GROUP BY year_group, classification
-ORDER BY YEAR 
+ORDER BY classification, YEAR 
 """
 # top_n_countries  AGG  year 
 temp = mockup_3_1.format(10, 1, 1960, 2022)
@@ -276,7 +292,8 @@ SELECT  e.country,
 FROM Electricity e INNER JOIN co2_emission c 
     ON e.country = c.country AND e.time_stamp = c.time_stamp
 WHERE e.country = '{0}' AND
-    (EXTRACT(year FROM e.time_stamp)> {1} AND EXTRACT(year FROM e.time_stamp)< {2})
+    (EXTRACT(year FROM e.time_stamp)> {1} 
+    AND EXTRACT(year FROM e.time_stamp)< {2})
 """
 
 temp = mockup_3_2.format('United States', 1960, 2022)
@@ -292,17 +309,18 @@ mockup_4_1 = """WITH GDP_year AS (
     EXTRACT(year FROM time_stamp) year
     FROM GDP
 ),
-gdp_rank AS (SELECT 
+gdp_rank_cte AS (
+SELECT 
     year, 
-    country, gross, 
+    country, 
     DENSE_RANK() OVER ( PARTITION BY Year ORDER BY gross DESC ) as gdp_rank  
 FROM GDP_year
-WHERE Year > {0} and year < {1})
-SELECT  
-    year, 
-    country, gross, gdp_rank
-FROM gdp_rank 
-WHERE gdp_rank <= 20
+WHERE Year > {1} and year < {2}
+)
+SELECT year, country, gdp_rank
+FROM gdp_rank_cte
+WHERE gdp_rank <= {0}
+ORDER BY  Country, Year
 """
 # only year filters
 #temp = mockup_4_1.format( 1960, 2022)
@@ -343,7 +361,7 @@ SELECT
     FROM countries_group
     WHERE year > {1} AND year < {2}
     GROUP BY classification, year
-    ORDER BY Year
+    ORDER BY classification,Year
 """
 # number of  countries and year filter
 #temp = mockup_4_2.format( 10, 1960, 2022)
@@ -370,7 +388,7 @@ internet_lag AS (SELECT
     LAG(iup, 1) OVER(PARTITION BY country ORDER BY year) as previous_year_iup
     FROM internet_year)
 
-SELECT year, country, iup,  
+SELECT year, iup,  
     CASE 
     WHEN previous_year_iup =0 THEN 0
     WHEN previous_year_iup > 0 THEN round(((iup/previous_year_iup) - 1)*100, 1)
@@ -379,6 +397,7 @@ SELECT year, country, iup,
     FROM internet_lag 
     WHERE Country = '{0}'
         AND (Year > {1} AND Year < {2})
+    ORDER BY Year
 """
 
 # country and years
