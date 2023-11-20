@@ -107,7 +107,8 @@ def get_data2_1():
     ##Send SQL query - TODO
     data = request.get_json()
     # ##Query
-    res = cursor.execute(q.mockup_2_1.format(data["country"],  data['from'], data['to']))
+    print(data)
+    res = cursor.execute(q.mockup_2_1.format(data["topN"],  data['from'], data['to']))
     
     data_db = dict()
     data_db['x']=[]
@@ -119,7 +120,7 @@ def get_data2_1():
         data_db['y1'].append(row[1])
         data_db['y2'].append(row[2])
 
-    ##Parse SQL query and Send JSON object back with x and y data for graph - TODO
+    ##Parse SQL query and Send JSON object back with x and y data for graph - 
     res_data = dict()
     countries = set(data_db['y1'])
     for c in countries:
@@ -132,7 +133,7 @@ def get_data2_1():
         res_data[k]['x'].append(data_db['x'][i])
         res_data[k]['y'].append(data_db['y2'][i])
     
-    print(res_data)
+    #print(res_data)
     return jsonify(
         isError=False,
         message="Success",
@@ -238,12 +239,24 @@ def get_data3_1():
         data_db['x'].append(row[0])
         data_db['y1'].append(row[1])
         data_db['y2'].append(row[2])
+        
+    res_data = dict()
+    countries = set(data_db['y1'])
+    for c in countries:
+        if c not in data:
+            res_data[c] = dict()
+            res_data[c]['x'] = []
+            res_data[c]['y'] = []
+
+    for i,k in enumerate(data_db['y1']):
+        res_data[k]['x'].append(data_db['x'][i])
+        res_data[k]['y'].append(data_db['y2'][i])
 
     return jsonify(
         isError=False,
         message="Success",
         statusCode=200,
-        data=data_db),200
+        data=res_data),200
     
     
 @app.route('/mockup_3_2', methods = ['POST'])
@@ -289,12 +302,25 @@ def get_data4_1():
         data_db['x'].append(row[0])
         data_db['y1'].append(row[1])
         data_db['y2'].append(row[2])
+        
+    res_data = dict()
+    countries = set(data_db['y1'])
+    for c in countries:
+        if c not in data:
+            res_data[c] = dict()
+            res_data[c]['x'] = []
+            res_data[c]['y'] = []
+
+    for i,k in enumerate(data_db['y1']):
+        res_data[k]['x'].append(data_db['x'][i])
+        res_data[k]['y'].append(data_db['y2'][i])
+    
 
     return jsonify(
         isError=False,
         message="Success",
         statusCode=200,
-        data=data_db),200
+        data=res_data),200
     
 @app.route('/mockup_4_2', methods = ['POST'])
 def get_data4_2():
@@ -303,7 +329,7 @@ def get_data4_2():
     ##Send SQL query - TODO
     data = request.get_json()
     # ##Query
-    res = cursor.execute(q.mockup_4_2.format(data["top_n_countries"],  data['from'], data['to']))
+    res = cursor.execute(q.mockup_4_2.format(data["topN"],  data['from'], data['to']))
     
     data_db = dict()
     data_db['x']=[]
@@ -314,12 +340,24 @@ def get_data4_2():
         data_db['x'].append(row[0])
         data_db['y1'].append(row[1])
         data_db['y2'].append(row[2])
+        
+    res_data = dict()
+    countries = set(data_db['y1'])
+    for c in countries:
+        if c not in data:
+            res_data[c] = dict()
+            res_data[c]['x'] = []
+            res_data[c]['y'] = []
+
+    for i,k in enumerate(data_db['y1']):
+        res_data[k]['x'].append(data_db['x'][i])
+        res_data[k]['y'].append(data_db['y2'][i])
 
     return jsonify(
         isError=False,
         message="Success",
         statusCode=200,
-        data=data_db),200
+        data=res_data),200
     
 @app.route('/mockup_5', methods = ['POST'])
 def get_data5():
