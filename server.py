@@ -349,6 +349,25 @@ def get_data5():
         statusCode=200,
         data=data_db),200
     
+@app.route('/records_count', methods = ['POST'])
+def get_data_record():
+
+    #mockup_1_2 doesnt have any parameters
+    ##Send SQL query - TODO
+    data = request.get_json()
+    # ##Query
+    res = cursor.execute(q.records_count)
+    
+    data_db = dict()
+ 
+    for row in res:
+        data_db['records_count'] = row[0]
+    return jsonify(
+        isError=False,
+        message="Success",
+        statusCode=200,
+        data=data_db),200
+    
 
     
 
