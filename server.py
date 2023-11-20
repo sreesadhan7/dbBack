@@ -3,6 +3,7 @@ from flask import request, jsonify
 from flask_cors import CORS
 import oracledb
 import queries as q
+
 app = Flask(__name__)
 CORS(app)
 cs = "(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=oracle.cise.ufl.edu)(PORT=1521))(CONNECT_DATA=(SERVER=DEDICATED)(SID=orcl)))"
@@ -14,10 +15,6 @@ dsn=cs)
 cursor = connection.cursor()
 print("Successfully connected to Oracle Database")
 
-@app.route("/")
-def hello_world():
-    print("hello")
-    return "<p>Hello, World!</p>"
 
 @app.route('/mockup_1_1', methods = ['POST'])
 def get_data():
