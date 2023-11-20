@@ -201,7 +201,7 @@ WITH co2_emission_year AS (
     WHERE Extract(YEAR FROM time_stamp) > 1990),
 
 Yearly_pollutions as (SELECT distinct year, round(AVG(emissions) 
-                        OVER (PARTITION BY year), 2)*2 average_year_emissions 
+                        OVER (PARTITION BY year), 2)*1.5 average_year_emissions 
 FROM co2_emission_year),
 
 countries_classification AS (SELECT 
