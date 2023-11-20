@@ -36,7 +36,8 @@ def get_data():
 
 
     ##Parse SQL query and Send JSON object back with x and y data for graph - TODO
-
+    if not data_db['x'] or not data_db['y1'] or not data_db['y2']:
+        data_db={}
     return jsonify(
         isError=False,
         message="Success",
@@ -61,7 +62,8 @@ def get_data1_2():
         data_db['y1'].append(row[1])
 
     ##Parse SQL query and Send JSON object back with x and y data for graph - TODO
-
+    if not data_db['x'] or not data_db['y1']:
+        data_db={}
     return jsonify(
         isError=False,
         message="Success",
@@ -92,7 +94,8 @@ def get_data1_3():
         data_db['y3'].append(row[3])
         data_db['y4'].append(row[4])
     ##Parse SQL query and Send JSON object back with x and y data for graph - TODO
-
+    if not data_db['x'] or not data_db['y1'] or not data_db['y2'] or not data_db['y2'] or not data_db['y3'] or not data_db['y4']:
+        data_db={}
     return jsonify(
         isError=False,
         message="Success",
@@ -107,7 +110,7 @@ def get_data2_1():
     ##Send SQL query - TODO
     data = request.get_json()
     # ##Query
-    res = cursor.execute(q.mockup_2_1.format(data["country"],  data['from'], data['to']))
+    res = cursor.execute(q.mockup_2_1.format(data["topN"],  data['from'], data['to']))
     
     data_db = dict()
     data_db['x']=[]
@@ -163,7 +166,8 @@ def get_data2_2():
         data_db['y3'].append(row[3])
 
     ##Parse SQL query and Send JSON object back with x and y data for graph - TODO
-
+    if not data_db['x'] or not data_db['y1'] or not data_db['y2'] or not data_db['y3']:
+        data_db={}
     return jsonify(
         isError=False,
         message="Success",
@@ -188,7 +192,8 @@ def get_data2_3():
         data_db['x'].append(row[0])
         data_db['y1'].append(row[1])
         data_db['y2'].append(row[2])
-
+    if not data_db['x'] or not data_db['y1'] or not data_db['y2']:
+        data_db={}
     return jsonify(
         isError=False,
         message="Success",
