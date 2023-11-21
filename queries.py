@@ -285,7 +285,7 @@ temp = mockup_3_1.format(10, 1, 1960, 2022)
 # -- Mockup 3.2
 # -- Filter country and years
 mockup_3_2 = """
-SELECT  e.country, 
+SELECT
     EXTRACT(year FROM e.time_stamp) year,
     round(e.net_consumption, 0) electricity_consumption,
     round(c.total, 0) toatl_co2_emissions
