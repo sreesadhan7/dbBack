@@ -97,7 +97,7 @@ GROUP BY Year, Country)
 
 SELECT year, COUNT(*) countries_count_experiencing_temp_shifts
 FROM temperature_shifts 
-Where anomalous_months >= 3
+WHERE anomalous_months >= 3 AND (Year > {0} AND Year < {1}) 
 GROUP BY Year 
 Order BY Year""" 
 #no parameters 
@@ -217,7 +217,7 @@ countries_classification AS (SELECT
      
 SELECT year, count(*) non_eco_friendly_countries
 FROM countries_classification 
-WHERE Status = 'NF' 
+WHERE Status = 'NF' AND (Year > {0} AND Year < {1}) 
 GROUP BY Year
 ORDER BY year
 """
