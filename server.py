@@ -32,8 +32,8 @@ def get_token():
         return jsonify(
             isError=False,
             message="Unauthenticated",
-            statusCode=404
-            ),404
+            statusCode=200,
+            data={"token": "unAuth"}),200
 
 @app.route('/register', methods=['POST'])
 def register():
