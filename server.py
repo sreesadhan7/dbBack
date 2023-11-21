@@ -81,9 +81,9 @@ def get_data1_2():
 
     #mockup_1_2 doesnt have any parameters
     ##Send SQL query - TODO
-    # data = request.get_json()
+    data = request.get_json()
     # ##Query
-    res = cursor.execute(q.mockup_1_2)
+    res = cursor.execute(q.mockup_1_2.format(data['from'], data['to']))
     
     data_db = dict()
     data_db['x']=[]
@@ -243,9 +243,9 @@ def get_data2_4():
 
     #mockup_1_2 doesnt have any parameters
     ##Send SQL query - TODO
-    #data = request.get_json()
+    data = request.get_json()
     # ##Query
-    res = cursor.execute(q.mockup_2_4)
+    res = cursor.execute(q.mockup_2_4.format(  data['from'], data['to']))
     
     data_db = dict()
     data_db['x']=[]
@@ -444,6 +444,9 @@ def get_data_record():
         message="Success",
         statusCode=200,
         data=data_db),200
+    
+if __name__ == '__main__':
+    app.run(debug=True)  
     
 
     
