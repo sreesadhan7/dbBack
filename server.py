@@ -15,6 +15,35 @@ dsn=cs)
 cursor = connection.cursor()
 print("Successfully connected to Oracle Database")
 
+users = dict()
+users["admin@admin.com"]={"name": "admin", "password": "admin"}
+
+@app.route('/login', methods=['POST'])
+def get_token():
+    print("login user request received !")
+    credentials = request.get_json()
+    if credentials["username"] in users.keys():
+        return jsonify(
+            isError=False,
+            message="Success",
+            statusCode=200,
+            data={"token": "12346"}),200
+    else:
+        return jsonify(
+            isError=False,
+            message="Unauthenticated",
+            statusCode=404
+            ),404
+
+@app.route('/register', methods=['POST'])
+def register():
+    print("new registration received !")
+    data = request.get_json()
+    users[data["username"]]={"name": data["name"], "password":data["password"]}
+    return jsonify(
+        isError=False,
+        message="Success",
+        statusCode=200),200
 
 @app.route('/mockup_1_1', methods = ['POST'])
 def get_data():
