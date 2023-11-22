@@ -92,7 +92,7 @@ temperature_shifts as (
 SELECT 
     year, country, count(*) anomalous_months
 FROM temp_pct_change 
-WHERE pct_change > 30 
+WHERE pct_change > 35
 GROUP BY Year, Country)
 
 SELECT year, COUNT(*) countries_count_experiencing_temp_shifts
