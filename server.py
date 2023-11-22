@@ -321,7 +321,7 @@ def get_data3_2():
 
     if not data_db['x'] or not data_db['y1'] or not data_db['y2']:
         data_db={}
-        
+
     return jsonify(
         isError=False,
         message="Success",
@@ -335,7 +335,7 @@ def get_data4_1():
     ##Send SQL query - TODO
     data = request.get_json()
     # ##Query
-    res = cursor.execute(q.mockup_4_1.format(data["top_n_countries"],  data['from'], data['to']))
+    res = cursor.execute(q.mockup_4_1.format(data["topN"],  data['from'], data['to']))
     
     data_db = dict()
     data_db['x']=[]
@@ -346,25 +346,33 @@ def get_data4_1():
         data_db['x'].append(row[0])
         data_db['y1'].append(row[1])
         data_db['y2'].append(row[2])
-        
-    res_data = dict()
-    countries = set(data_db['y1'])
-    for c in countries:
-        if c not in data:
-            res_data[c] = dict()
-            res_data[c]['x'] = []
-            res_data[c]['y'] = []
-
-    for i,k in enumerate(data_db['y1']):
-        res_data[k]['x'].append(data_db['x'][i])
-        res_data[k]['y'].append(data_db['y2'][i])
     
+    res_data = dict()
+
+    minYear = min(data_db['x'])
+    maxYear = max(data_db['x'])
+
+    countries = set(data_db['y1'])
+    checks = dict()
+    for c in countries:
+        checks[c]=dict()
+        checks[c]["years"]= [None for x in range(minYear, maxYear+1)]
+        checks[c]["ranks"]= [None for x in range(minYear, maxYear+1)]
+
+    for i in range(len(data_db['x'])):
+        if data_db['y1'][i] not in res_data:
+            res_data[data_db['y1'][i]]=dict()
+
+        checks[data_db['y1'][i]]["years"][data_db['x'][i]-minYear]=data_db['x'][i]
+        checks[data_db['y1'][i]]["ranks"][data_db['x'][i]-minYear]=data_db['y2'][i]
+        res_data[data_db['y1'][i]]['x']=checks[data_db['y1'][i]]["years"]
+        res_data[data_db['y1'][i]]['y']=checks[data_db['y1'][i]]["ranks"]
 
     return jsonify(
         isError=False,
         message="Success",
         statusCode=200,
-        data=res_data),200
+        data={"rank":res_data, "x":[i for i in range(minYear, maxYear+1)]}),200
     
 @app.route('/mockup_4_2', methods = ['POST'])
 def get_data4_2():
