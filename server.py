@@ -228,8 +228,7 @@ def get_data2_3():
         data_db['x'].append(row[0])
         data_db['y1'].append(row[1])
         data_db['y2'].append(row[2])
-    if not data_db['x'] or not data_db['y1'] or not data_db['y2']:
-        data_db={}
+
     if not data_db['x'] or not data_db['y1'] or not data_db['y2']:
         data_db={}
     return jsonify(
@@ -270,7 +269,7 @@ def get_data3_1():
     data = request.get_json()
     # ##Query
     year_dict = {"Y":1, "2Y":2, "3Y":3, "5Y":5}
-    res = cursor.execute(q.mockup_3_1.format(data["top_n_countries"],  year_dict[data["agg"]],  data['from'], data['to']))
+    res = cursor.execute(q.mockup_3_1.format(data["topN"],  year_dict[data["agg"]],  data['from'], data['to']))
     
     data_db = dict()
     data_db['x']=[]
@@ -320,6 +319,9 @@ def get_data3_2():
         data_db['y1'].append(row[1])
         data_db['y2'].append(row[2])
 
+    if not data_db['x'] or not data_db['y1'] or not data_db['y2']:
+        data_db={}
+        
     return jsonify(
         isError=False,
         message="Success",
