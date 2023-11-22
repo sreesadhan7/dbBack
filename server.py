@@ -22,7 +22,11 @@ users["admin@admin.com"]={"name": "admin", "password": "admin"}
 def get_token():
     print("login user request received !")
     credentials = request.get_json()
-    if credentials["username"] in users.keys():
+    print(credentials)
+    print(q.login.format(credentials["username"], credentials["password"]))
+    res = cursor.execute(q.login.format(credentials["username"], credentials["password"]))
+    if list(res)[0][0] == 1:
+        print("user authenticated !")
         return jsonify(
             isError=False,
             message="Success",
