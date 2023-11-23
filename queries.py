@@ -403,6 +403,8 @@ SELECT year, iup,
 login = """SELECT count(*) FROM  Login_creadentials 
 WHERE USER_NAME = '{0}' AND PASSWORD = '{1}'"""
 
+register = """INSERT INTO Login_creadentials VALUES ('{0}', '{1}')"""
+
 # country and years
 #temp = mockup_5.format('India', 1990, 2022)
 

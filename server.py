@@ -43,7 +43,11 @@ def get_token():
 def register():
     print("new registration received !")
     data = request.get_json()
-    users[data["username"]]={"name": data["name"], "password":data["password"]}
+    #users[data["username"]]={"name": data["name"], "password":data["password"]}
+    
+    res = cursor.execute(q.register.format(data["username"], data["password"]))
+    cursor.execute('commit')
+    
     return jsonify(
         isError=False,
         message="Success",
