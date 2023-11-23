@@ -92,7 +92,7 @@ temperature_shifts as (
 SELECT 
     year, country, count(*) anomalous_months
 FROM temp_pct_change 
-WHERE pct_change > 30 
+WHERE pct_change > 35
 GROUP BY Year, Country)
 
 SELECT year, COUNT(*) countries_count_experiencing_temp_shifts
@@ -399,6 +399,11 @@ SELECT year, iup,
         AND (Year > {1} AND Year < {2})
     ORDER BY Year
 """
+
+login = """SELECT count(*) FROM  Login_creadentials 
+WHERE USER_NAME = '{0}' AND PASSWORD = '{1}'"""
+
+register = """INSERT INTO Login_creadentials VALUES ('{0}', '{1}')"""
 
 # country and years
 #temp = mockup_5.format('India', 1990, 2022)
