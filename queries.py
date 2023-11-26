@@ -24,24 +24,10 @@ surface_and_atmosphere as
         INNER JOIN 
         Global_Surface_Temperature gs 
         ON ga.country = gs.country AND ga.time_stamp = EXTRACT(YEAR FROM gs.time_stamp)),
-
 year_temps as 
     (SELECT * FROM surface_and_atmosphere WHERE 
         country = '{0}' ORDER BY year
     ),
-
-year_temp_country_code AS
-    (
-        SELECT 
-            cp.c_code_ISO3 country, 
-            year, 
-            atmosphere_temp, 
-            surface_temp 
-        FROM 
-            year_temps yt 
-            INNER JOIN country_prime cp ON yt.country = cp.country_source
-    ),
-
 YearGroups AS (
     SELECT 
         year,
@@ -50,7 +36,7 @@ YearGroups AS (
         atmosphere_temp,
         ceil(((year - MIN(year-1) OVER ())/{1})) AS year_group
     FROM 
-        year_temp_country_code ORDER BY year
+        year_temps ORDER BY year
 )
 --SELECT * FROM YearGroups;
 SELECT 
