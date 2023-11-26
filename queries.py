@@ -57,14 +57,10 @@ SELECT
     MIN (year) YEAR,
     avg(surface_temp) avg_surface_temp,
     avg(atmosphere_temp) avg_atmosphere_Temp
-FROM 
-    YearGroups
-WHERE
-    year > {2} and year <= {3}
-GROUP BY
-    year_group
-ORDER BY
-    YEAR"""
+FROM YearGroups
+WHERE year >= {2} and year <= {3}
+GROUP BY year_group
+ORDER BY YEAR"""
 # country, agg, year range
 #temp = mockup_1_1.format('Afghanistan', 5, 1960, 2022)
 
@@ -97,7 +93,7 @@ GROUP BY Year, Country)
 
 SELECT year, COUNT(*) countries_count_experiencing_temp_shifts
 FROM temperature_shifts 
-WHERE anomalous_months >= 3 AND (Year > {0} AND Year < {1}) 
+WHERE anomalous_months >= 3 AND (Year >= {0} AND Year <= {1}) 
 GROUP BY Year 
 Order BY Year""" 
 #no parameters 
@@ -113,7 +109,7 @@ Round(STDDEV(temperature_monthly_mean) OVER ( PARTITION BY country, year Order B
 Round(Min(temperature_monthly_mean) OVER ( PARTITION BY country, year Order By year, 2)) yearly_temp_min,
 Round(Max(temperature_monthly_mean) OVER ( PARTITION BY country, year Order By year, 2)) yearly_temp_max
 FROM temperature_year_extraction 
-WHERE country = '{0}' AND (year > {1} AND year < {2})
+WHERE country = '{0}' AND (year >= {1} AND year <= {2})
 ORDER BY Year
 """ 
 # country and year filters
@@ -138,7 +134,7 @@ SELECT
     Extract(Year FROM time_stamp) as year,country,  total co2_emission_million_metric_tons   
 FROM CO2_Emission
 WHERE country IN ( SELECT country FROM  top_n_polluters)
-    AND (EXTRACT ( Year FROM time_stamp) > {1} AND EXTRACT ( Year FROM time_stamp) < {2})
+    AND (EXTRACT ( Year FROM time_stamp) >= {1} AND EXTRACT ( Year FROM time_stamp) <= {2})
     Order By country, year
 """
 # top_n_countries, year range
@@ -160,8 +156,8 @@ FROM CO2_Emission c
     INNER JOIN Global_Surface_Temperature gst ON c.country = gst.country 
     AND c.time_stamp = gst.time_stamp
 WHERE c.country = '{0}'
-     AND (EXTRACT ( Year FROM c.time_stamp) > {1} 
-     AND EXTRACT ( Year FROM c.time_stamp) < {2})
+     AND (EXTRACT ( Year FROM c.time_stamp) >= {1} 
+     AND EXTRACT ( Year FROM c.time_stamp) <= {2})
 ORDER BY c.country, year
 """
 # country and year filters
@@ -181,8 +177,8 @@ FROM CO2_Emission c
     INNER JOIN Global_Surface_Temperature gst ON c.country = gst.country 
     AND c.time_stamp = gst.time_stamp
 WHERE c.country = '{0}'
-     AND (EXTRACT ( Year FROM c.time_stamp) > {1} 
-     AND EXTRACT ( Year FROM c.time_stamp) < {2})
+     AND (EXTRACT ( Year FROM c.time_stamp) >= {1} 
+     AND EXTRACT ( Year FROM c.time_stamp) <= {2})
 ORDER BY Year
 """
 # country and year filters
@@ -217,7 +213,7 @@ countries_classification AS (SELECT
      
 SELECT year, count(*) non_eco_friendly_countries
 FROM countries_classification 
-WHERE Status = 'NF' AND (Year > {0} AND Year < {1}) 
+WHERE Status = 'NF' AND (Year >= {0} AND Year <= {1}) 
 GROUP BY Year
 ORDER BY year
 """
@@ -274,7 +270,7 @@ SELECT
     classification,
     round(sum(total_consumption), 0) total_consumption
 FROM Groupingyears
-WHERE year > {2} and year <= {3}
+WHERE year >= {2} and year <= {3}
 GROUP BY year_group, classification
 ORDER BY classification, YEAR 
 """
@@ -292,8 +288,8 @@ SELECT
 FROM Electricity e INNER JOIN co2_emission c 
     ON e.country = c.country AND e.time_stamp = c.time_stamp
 WHERE e.country = '{0}' AND
-    (EXTRACT(year FROM e.time_stamp)> {1} 
-    AND EXTRACT(year FROM e.time_stamp)< {2})
+    (EXTRACT(year FROM e.time_stamp)>= {1} 
+    AND EXTRACT(year FROM e.time_stamp)<= {2})
 """
 
 temp = mockup_3_2.format('United States', 1960, 2022)
@@ -315,7 +311,7 @@ SELECT
     country, 
     DENSE_RANK() OVER ( PARTITION BY Year ORDER BY gross DESC ) as gdp_rank  
 FROM GDP_year
-WHERE Year > {1} and year < {2}
+WHERE Year >= {1} and year <= {2}
 )
 SELECT year, country, gdp_rank
 FROM gdp_rank_cte
@@ -359,7 +355,7 @@ SELECT
     year, classification country, 
     round(avg(gdp_per_capita)/1000, 1) total_consumption
     FROM countries_group
-    WHERE year > {1} AND year < {2}
+    WHERE year >= {1} AND year <= {2}
     GROUP BY classification, year
     ORDER BY classification,Year
 """
@@ -396,7 +392,7 @@ SELECT year, iup,
     END AS  growth_rate 
     FROM internet_lag 
     WHERE Country = '{0}'
-        AND (Year > {1} AND Year < {2})
+        AND (Year >= {1} AND Year <= {2})
     ORDER BY Year
 """
 
